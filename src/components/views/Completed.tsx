@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {checkoutMachineContext} from "@/providers/CheckoutMachineProvider";
 import Wrapper from "@/components/atoms/Wrapper";
 import {ContextProductType, ContextType} from "@/models/Machine";
@@ -7,12 +7,14 @@ import Info from "@/components/atoms/Info";
 const Completed: React.FC = () => {
   const context = checkoutMachineContext.useSelector((state) => state.context);
   const actorRef = checkoutMachineContext.useActorRef();
+  const [loading, setLoading] = useState(false);
 
   const handleSetMessage = (message: string) => {
     actorRef.send({type: "SET_MESSAGE", message: message});
   };
 
   const sendData = async (context: ContextType) => {
+    setLoading(true);
     const response = await fetch("https://eomur63bdrnsvtt.m.pipedream.net", {
       method: "POST",
       headers: {
@@ -54,7 +56,7 @@ const Completed: React.FC = () => {
               </tbody>
             </table>
 
-            <div className="grid grid-cols-2">
+            <div className="grid grid-cols-2 gap-6">
               <div className="mt-4">
                 <h3 className="text-lg font-semibold">Adres dostawy</h3>
                 <p>
@@ -77,12 +79,16 @@ const Completed: React.FC = () => {
             </div>
 
             <div className="mt-10 mx-auto">
-              <button
-                className="btn btn-primary"
-                onClick={() => sendData(context)}
-              >
-                Wyślij
-              </button>
+              {loading ? (
+                <span className="loading loading-spinner loading-lg"></span>
+              ) : (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => sendData(context)}
+                >
+                  Wyślij
+                </button>
+              )}
             </div>
           </>
         )}
